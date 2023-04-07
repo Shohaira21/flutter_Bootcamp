@@ -1,0 +1,126 @@
+import 'package:flutter/material.dart';
+
+class CalculatorApp extends StatefulWidget {
+  @override
+  _CalculatorAppState createState() => _CalculatorAppState();
+}
+
+class _CalculatorAppState extends State<CalculatorApp> {
+  String _input = '';
+  String _output = '';
+
+  void _onButtonPressed(String value) {
+    setState(() {
+      if (value == '=') {
+        try {
+          _output = eval(_input).toString();
+        } catch (e) {
+          _output = 'Error';
+        }
+      } else if (value == 'C') {
+        _input = '';
+        _output = '';
+      } else {
+        _input += value;
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Calculator'),
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: Container(
+              padding: EdgeInsets.all(16.0),
+              child: Text(
+                _input,
+                style: TextStyle(fontSize: 24.0),
+              ),
+            ),
+          ),
+          Divider(),
+          Expanded(
+            child: Container(
+              padding: EdgeInsets.all(16.0),
+              child: Text(
+                _output,
+                style: TextStyle(fontSize: 48.0),
+              ),
+            ),
+          ),
+          Divider(),
+          Column(
+            children: [
+              Row(
+                children: [
+                  _buildButton('7'),
+                  _buildButton('8'),
+                  _buildButton('9'),
+                  _buildButton('/'),
+                ],
+              ),
+              Row(
+                children: [
+                  _buildButton('4'),
+                  _buildButton('5'),
+                  _buildButton('6'),
+                  _buildButton('*'),
+                ],
+              ),
+              Row(
+                children: [
+                  _buildButton('1'),
+                  _buildButton('2'),
+                  _buildButton('3'),
+                  _buildButton('-'),
+                ],
+              ),
+              Row(
+                children: [
+                  _buildButton('.'),
+                  _buildButton('0'),
+                  _buildButton('='),
+                  _buildButton('+'),
+                ],
+              ),
+              Row(
+                children: [
+                  _buildButton('C'),
+                ],
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildButton(String value) {
+    return Expanded(
+      child: ElevatedButton(
+        onPressed: () => _onButtonPressed(value),
+        child: Text(value),
+        style: ElevatedButton.styleFrom(
+          textStyle: TextStyle(fontSize: 24.0),
+          padding: EdgeInsets.all(24.0),
+        ),
+      ),
+    );
+  }
+
+  double eval(String expression) {
+    Parser parser = Parser();
+    ContextModel contextModel = ContextModel();
+    Expression exp = parser.parse(expression);
+    return exp.evaluate(EvaluationType.REAL, contextModel);
+  }
+}
+
+void main() {
+  runApp(MaterialApp(home: CalculatorApp()));
+}

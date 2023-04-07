@@ -1,0 +1,69 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+// Events
+enum LoginEvent { loginButtonPressed }
+
+// State
+class LoginState {}
+
+class LoginBloc extends Bloc<LoginEvent, LoginState> {
+  LoginBloc() : super(LoginState());
+
+  @override
+  Stream<LoginState> mapEventToState(LoginEvent event) async* {
+    if (event == LoginEvent.loginButtonPressed) {
+      // Perform login logic here
+      yield LoginState();
+    }
+  }
+}
+
+class LoginPage extends StatelessWidget {
+  final LoginBloc loginBloc = LoginBloc();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Login')),
+      body: BlocProvider<LoginBloc>(
+        create: (context) => loginBloc,
+        child: BlocListener<LoginBloc, LoginState>(
+          listener: (context, state) {
+            // Handle state changes here, e.g. show/hide error messages
+          },
+          child: BlocBuilder<LoginBloc, LoginState>(
+            builder: (context, state) {
+              return Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TextField(
+                      decoration: InputDecoration(labelText: 'Username'),
+                    ),
+                    SizedBox(height: 16.0),
+                    TextField(
+                      decoration: InputDecoration(labelText: 'Password'),
+                      obscureText: true,
+                    ),
+                    SizedBox(height: 16.0),
+                    ElevatedButton(
+                      onPressed: () =>
+                          loginBloc.add(LoginEvent.loginButtonPressed),
+                      child: Text('Login'),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+void main() {
+  runApp(MaterialApp(home: LoginPage()));
+}
