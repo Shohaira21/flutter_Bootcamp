@@ -1,0 +1,107 @@
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+
+class Todo {
+  String task;
+  DateTime dateTime;
+
+  Todo({
+    required this.task,
+    required this.dateTime,
+  });
+}
+
+class TodoListApp extends StatefulWidget {
+  @override
+  _TodoListAppState createState() => _TodoListAppState();
+}
+
+class _TodoListAppState extends State<TodoListApp> {
+  List<Todo> _todos = [];
+  TextEditingController _taskController = TextEditingController();
+  final DateFormat _dateFormat = DateFormat('MMM d, yyyy - h:mm a');
+
+  void _addTodo() {
+    String task = _taskController.text;
+    DateTime dateTime = DateTime.now();
+    Todo todo = Todo(task: task, dateTime: dateTime);
+    setState(() {
+      _todos.add(todo);
+      _taskController.clear();
+    });
+  }
+
+  void _removeTodoAt(int index) {
+    setState(() {
+      _todos.removeAt(index);
+    });
+  }
+
+  void _clearTodos() {
+    setState(() {
+      _todos.clear();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Todo List'),
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: ListView.builder(
+              itemCount: _todos.length,
+              itemBuilder: (context, index) {
+                Todo todo = _todos[index];
+                return ListTile(
+                  leading: Icon(Icons.check_circle),
+                  title: Text(todo.task),
+                  subtitle: Text(_dateFormat.format(todo.dateTime)),
+                  trailing: IconButton(
+                    icon: Icon(Icons.delete),
+                    onPressed: () => _removeTodoAt(index),
+                  ),
+                );
+              },
+            ),
+          ),
+          Divider(),
+          Container(
+            padding: EdgeInsets.all(16.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _taskController,
+                    decoration: InputDecoration(
+                      hintText: 'Enter task',
+                    ),
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(Icons.add),
+                  onPressed: _addTodo,
+                ),
+              ],
+            ),
+          ),
+          Divider(),
+          ElevatedButton(
+            onPressed: _clearTodos,
+            child: Text('Clear All'),
+            style: ElevatedButton.styleFrom(
+              padding: EdgeInsets.all(16.0),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+void main() {
+  runApp(MaterialApp(home: TodoListApp()));
+}
